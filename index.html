@@ -96,6 +96,17 @@
   .lift-positive { color: var(--pass); font-weight: 600; }
   .lift-zero { color: var(--muted); }
 
+  table.qa { table-layout: fixed; font-size: 13.5px; }
+  table.qa col.col-qid { width: 48px; }
+  table.qa col.col-q { width: 22%; }
+  table.qa col.col-correct { width: 28%; }
+  table.qa col.col-without { width: 28%; }
+  table.qa col.col-with { width: 110px; }
+  table.qa td, table.qa th { vertical-align: top; }
+  table.qa td.verdict-cell { white-space: normal; }
+  .cell-note { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .cell-em-dash { color: var(--muted); }
+
   footer {
     margin-top: 48px;
     padding-top: 18px;
@@ -192,28 +203,70 @@
     </div>
   </div>
 
-  <table>
-    <thead><tr><th>QID</th><th>Scientific question</th><th>Without</th><th>With</th></tr></thead>
+  <table class="qa">
+    <colgroup>
+      <col class="col-qid"><col class="col-q"><col class="col-correct"><col class="col-without"><col class="col-with">
+    </colgroup>
+    <thead><tr><th>QID</th><th>Scientific question</th><th>Correct interpretation</th><th>Without enrichment</th><th>With enrichment</th></tr></thead>
     <tbody>
-      <tr><td>01</td><td>How many distinct chromatin loops were called by Mustache in this study?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>02</td><td>How many loops are in the <code>mESC_random_loops_filtered</code> file?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>03</td><td>Which file should be used as "the final set of mESC loops" for downstream analysis?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>04</td><td>What is the unit of observation (the grain) of the bootstrap CTCF measurement file?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>05</td><td>To fit a regression of loop strength on covariates, which file is the appropriate input?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>06</td><td>Does this dataset contain experimentally measured CTCF binding sites?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>07</td><td>How does Micro-C loop quantification compare to Micro-C quantification of random loops?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>08</td><td>What experimental measurement does the polysim calibration curve represent?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr>
+        <td>01</td>
+        <td>How many distinct chromatin loops were called by Mustache in this study?</td>
+        <td>Per-resolution counts; the three Mustache files contain the same loop set at 1 kb / 2 kb / 5 kb resolutions and must not be summed.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Treated the three files as independent loop sets.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>02</td>
+        <td>How many loops are in the <code>mESC_random_loops_filtered</code> file?</td>
+        <td>~37,726 rows, but identified as a permutation-based statistical control rather than a real loop cohort.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Reported the row count as if it were real loops.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>03</td>
+        <td>Which file should be used as "the final set of mESC loops" for downstream analysis?</td>
+        <td>Three candidate files (<code>filtered_loops</code>, <code>final_loop_data</code>, <code>mESC_all_merged_loops_*</code>) overlap with different filter criteria; recommend comparing filter definitions before selecting.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Recommended one file with no acknowledgement of the other two.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>04</td>
+        <td>What is the unit of observation (the grain) of the bootstrap CTCF measurement file?</td>
+        <td>One row per loop; the file is a single-column bootstrap-score vector, not a multi-feature relational table.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>05</td>
+        <td>To fit a regression of loop strength on covariates, which file is the appropriate input?</td>
+        <td>Use <code>X_train</code>/<code>y_train</code> for fitting and <code>X_test</code>/<code>y_test</code> for evaluation; the dataset includes a held-out split.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>06</td>
+        <td>Does this dataset contain experimentally measured CTCF binding sites?</td>
+        <td>No — <code>mm39_CTCF_cohesin.bed</code> is a reference annotation from the mm39 mouse genome build, not a measurement performed in this study.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">"Yes — 28,583 CTCF sites measured" (reference annotation read as study output).</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>07</td>
+        <td>How does Micro-C loop quantification compare to Micro-C quantification of random loops?</td>
+        <td>The <code>_random</code> variant is a permutation-based null distribution; the comparison is observed-vs-null, not two experimental conditions.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>08</td>
+        <td>What experimental measurement does the polysim calibration curve represent?</td>
+        <td>None — polysim files are polymer-physics simulation outputs (computational priors), not wet-lab measurements.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Described as a Micro-C experimental measurement.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
     </tbody>
   </table>
-
-  <h3>Errors observed without enrichment</h3>
-  <ul>
-    <li><strong>Q01.</strong> The same loop calls appear at three genomic resolutions (1 kb, 2 kb, 5 kb) in three separate files. Without guidance the agent treated them as independent loop sets.</li>
-    <li><strong>Q02.</strong> The <code>_random</code> file is a permutation-based statistical control, not a discovered cohort of loops. The unenriched answer reported its row count as a count of loops.</li>
-    <li><strong>Q03.</strong> Three candidate files share keys but differ in annotation depth. Without context the agent picked one arbitrarily, with no acknowledgement of the choice.</li>
-    <li><strong>Q06.</strong> A bundled annotation of CTCF binding sites from the mm39 reference genome was reported as an experimental measurement performed in this study.</li>
-    <li><strong>Q08.</strong> The polysim calibration curve is the output of a polymer-physics simulation. Without guidance, the agent read its numeric columns as wet-lab measurements.</li>
-  </ul>
 </section>
 
 <section>
@@ -228,29 +281,77 @@
     </div>
   </div>
 
-  <table>
-    <thead><tr><th>QID</th><th>Scientific question</th><th>Without</th><th>With</th></tr></thead>
+  <table class="qa">
+    <colgroup>
+      <col class="col-qid"><col class="col-q"><col class="col-correct"><col class="col-without"><col class="col-with">
+    </colgroup>
+    <thead><tr><th>QID</th><th>Scientific question</th><th>Correct interpretation</th><th>Without enrichment</th><th>With enrichment</th></tr></thead>
     <tbody>
-      <tr><td>01</td><td>What is the mean donor age across the cell-line entity table?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>02</td><td>What is the average measurement value per perturbagen?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>03</td><td>How many rows result from joining the perturbagen entity to its metrics table?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>04</td><td>How does one obtain a single row per signature combining the signature table with its metrics?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>05</td><td>What is the high-quality subset of the signature table?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>06</td><td>How many treatment (non-control) perturbations are present in the signature table?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>07</td><td>What is the median dose across the signature table?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>08</td><td>How many distinct cell lines are represented in the cell-line entity table?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>09</td><td>What fraction of genes carry the landmark indicator?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict fail">FAIL</span></td></tr>
+      <tr>
+        <td>01</td>
+        <td>What is the mean donor age across the cell-line entity table?</td>
+        <td>~50.4 years, computed after excluding the −666 missing-value sentinel.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>02</td>
+        <td>What is the average measurement value per perturbagen?</td>
+        <td>Aggregate from the signature-level rollup table directly; the signature table is already an aggregate of the replicate-level table.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Joined through the replicate-level table, double-counting observations per perturbagen.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>03</td>
+        <td>How many rows result from joining the perturbagen entity to its metrics table?</td>
+        <td>Approximately the original row count of the entity table — the two tables share a one-to-one key (same-grain wide split).</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Reported a fan-out row count as if the join were many-to-many.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>04</td>
+        <td>How does one obtain a single row per signature combining the signature table with its metrics?</td>
+        <td>Inner join on the signature key (the two tables are same-grain wide splits).</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>05</td>
+        <td>What is the high-quality subset of the signature table?</td>
+        <td>Filter by the high-quality flag on the metrics table (and/or the touchstone flag on the perturbagen table).</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>06</td>
+        <td>How many treatment (non-control) perturbations are present in the signature table?</td>
+        <td>Count after explicitly excluding control perturbation types.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>07</td>
+        <td>What is the median dose across the signature table?</td>
+        <td>Group by unit before computing a median; the dose column mixes nM, µM, percent and ng/ml, with the unit captured in a separate column.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Single pooled median across mixed units.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>08</td>
+        <td>How many distinct cell lines are represented in the cell-line entity table?</td>
+        <td>98 entries with a parent-pointer column distinguishing primary lines from engineered derivatives; report each separately.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Counted all 98 rows as independent cell lines.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>09</td>
+        <td>What fraction of genes carry the landmark indicator?</td>
+        <td>~7.93% (978/12,328); flag that the second indicator is a non-disjoint superset, not a complementary partition.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Correct fraction reported, overlap with the second indicator not acknowledged.</div></td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Same shape — fraction correct, overlap not surfaced.</div></td>
+      </tr>
     </tbody>
   </table>
-
-  <h3>Errors observed without enrichment</h3>
-  <ul>
-    <li><strong>Q02.</strong> The signature table is itself an aggregate over an underlying replicate-level table. The agent joined back through the replicate table and double-counted observations per perturbagen.</li>
-    <li><strong>Q03.</strong> The two tables are wide splits of the same logical entity sharing a one-to-one key. The agent treated them as independent and reported a fan-out from a many-to-many join.</li>
-    <li><strong>Q07.</strong> The dose column is recorded in heterogeneous units (nM, µM, percent, …) with the unit captured in a separate column. Without the unit semantics the agent computed a single pooled median, a quantity with no scientific meaning.</li>
-    <li><strong>Q08.</strong> The cell-line entity table contains both primary lines and engineered derivative lines linked through a parent-pointer column. Without that hierarchy the agent counted all rows as distinct cell lines.</li>
-    <li><strong>Q09.</strong> The two boolean indicators are not mutually exclusive (the second is a superset that includes the first). The fraction was computed correctly but presented without acknowledging the overlap with the second indicator.</li>
-  </ul>
 </section>
 
 <section>
@@ -264,24 +365,64 @@
     </div>
   </div>
 
-  <table>
-    <thead><tr><th>QID</th><th>Scientific question</th><th>Without</th><th>With</th></tr></thead>
+  <table class="qa">
+    <colgroup>
+      <col class="col-qid"><col class="col-q"><col class="col-correct"><col class="col-without"><col class="col-with">
+    </colgroup>
+    <thead><tr><th>QID</th><th>Scientific question</th><th>Correct interpretation</th><th>Without enrichment</th><th>With enrichment</th></tr></thead>
     <tbody>
-      <tr><td>01</td><td>How many distinct patients have a diagnosis of congestive heart failure (ICD-9 428.*)?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>02</td><td>What are the five most common diagnoses in the cohort?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>03</td><td>What is the mean serum glucose in the laboratory events table for adult patients?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict fail">FAIL</span></td></tr>
-      <tr><td>04</td><td>What is the average heart rate in the chart events table across all ICU stays?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>05</td><td>What is the primary diagnosis (sequence number = 1) per admission?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>06</td><td>What fraction of admissions ended in patient death?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>07</td><td>How many positive blood-culture results are recorded?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr>
+        <td>01</td>
+        <td>How many distinct patients have a diagnosis of congestive heart failure (ICD-9 428.*)?</td>
+        <td>345 distinct patients (count over the patient identifier, not over diagnosis rows or admissions).</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>02</td>
+        <td>What are the five most common diagnoses in the cohort?</td>
+        <td>Top-5 list reported using ICD-9 codes only, with the coding scheme stated (4019 / 4280 / 42731 / 41401 / 2724).</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>03</td>
+        <td>What is the mean serum glucose in the laboratory events table for adult patients?</td>
+        <td>Mean computed after excluding zero-valued rows specific to this LABEVENTS extract (zero is used as a placeholder for missing).</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Mean computed including zero-valued placeholder rows.</div></td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Specimen mixing surfaced; zero-as-placeholder convention not caught.</div></td>
+      </tr>
+      <tr>
+        <td>04</td>
+        <td>What is the average heart rate in the chart events table across all ICU stays?</td>
+        <td>Average across heart-rate item ids from both CareVue (legacy) and MetaVision (newer) charting systems.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>05</td>
+        <td>What is the primary diagnosis (sequence number = 1) per admission?</td>
+        <td>Acknowledge that the primary-diagnosis sequence number is not unique per admission; aggregate or note the non-uniqueness.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>06</td>
+        <td>What fraction of admissions ended in patient death?</td>
+        <td>~9.08% computed from the hospital-expiry flag; the death-time field alone undercounts because many deaths lack a recorded time.</td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td>07</td>
+        <td>How many positive blood-culture results are recorded?</td>
+        <td>Microbiology table has one row per (test, organism) pair; a single positive test with three organisms appears as three rows. Report distinct positive tests or organism-level rows with the definition stated.</td>
+        <td class="verdict-cell"><span class="verdict fail">FAIL</span><div class="cell-note">Refused due to a coding error; did not reach the (test, organism) grain question.</div></td>
+        <td class="verdict-cell"><span class="verdict pass">PASS</span></td>
+      </tr>
     </tbody>
   </table>
 
-  <h3>Errors observed without enrichment</h3>
-  <ul>
-    <li><strong>Q03.</strong> The laboratory events table uses a numeric value of zero as a placeholder for missing measurements in this extract. Both arms missed the convention. The mean glucose is reported across rows including the placeholders, biasing the estimate.</li>
-    <li><strong>Q07.</strong> The microbiology events table has one row per (test, organism) pair, so a single specimen can yield multiple rows. Without the grain explicitly stated, the unenriched answer conflated specimens with isolates.</li>
-  </ul>
   <p>The MIMIC result behaves as a control: where the agent already has strong prior knowledge of a dataset, enrichment provides only marginal additional benefit. The bulk of the lift in this benchmark comes from datasets where the agent has no such prior.</p>
 </section>
 
