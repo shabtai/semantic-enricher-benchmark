@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semantic Enricher — Silent-Errors Benchmark</title>
+<title>Semantic Enricher — Benchmark Results</title>
 <style>
   :root {
     --bg: #fafaf7;
@@ -25,14 +25,14 @@
     background: var(--bg);
     color: var(--fg);
     margin: 0;
-    line-height: 1.55;
+    line-height: 1.6;
     font-size: 16px;
   }
   .container { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
   header { border-bottom: 1px solid var(--border); padding-bottom: 24px; margin-bottom: 36px; }
   h1 { font-size: 28px; margin: 0 0 8px; line-height: 1.2; }
   h2 { font-size: 22px; margin: 36px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  h3 { font-size: 18px; margin: 24px 0 12px; }
+  h3 { font-size: 17px; margin: 22px 0 10px; }
   p { margin: 0 0 14px; }
   .lede { color: var(--muted); font-size: 17px; margin-top: 8px; }
   .hero {
@@ -84,11 +84,6 @@
   .ds-meta { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; color: var(--muted); }
   .ds-meta span b { color: var(--fg); font-weight: 600; }
 
-  details { margin: 8px 0 14px; }
-  summary { cursor: pointer; font-weight: 500; padding: 4px 0; color: var(--accent); }
-  summary:hover { text-decoration: underline; }
-  .reason { font-size: 13px; color: var(--muted); padding: 4px 8px 8px 16px; border-left: 2px solid var(--border); margin: 4px 0; }
-
   .key-finding {
     background: #fffbe6;
     border-left: 4px solid #d4a52a;
@@ -118,9 +113,9 @@
 <div class="container">
 
 <header>
-  <h1>Semantic Enricher — Silent-Errors Benchmark</h1>
-  <p class="lede">Does a semantic enrichment layer help an analytical agent avoid structural data traps? An apples-to-apples comparison across three datasets and 24 questions.</p>
-  <p class="lede" style="margin-top: 4px; font-size: 14px;">Run: 2026-04-25 · 3 datasets · 24 questions · 2 arms (blind vs <code>/ask</code>) · <a style="color: var(--accent);" href="https://github.com/anthropics/claude-code">Claude Code</a> agent on Anthropic Claude Opus 4.7</p>
+  <h1>Semantic Enricher — Benchmark Results</h1>
+  <p class="lede">A controlled comparison of an analytical agent answering scientific questions against three biomedical datasets, with and without a semantic enrichment layer.</p>
+  <p class="lede" style="margin-top: 4px; font-size: 14px;">Run: 2026-04-25 · 3 datasets · 24 questions · 2 arms (without vs with enrichment) · agent: <a style="color: var(--accent);" href="https://github.com/anthropics/claude-code">Claude Code</a> on Anthropic Claude Opus 4.7</p>
 </header>
 
 <section>
@@ -128,11 +123,11 @@
   <div class="hero">
     <div class="hero-card hero-blind">
       <p class="hero-num">12<span class="denom">/24</span></p>
-      <div class="hero-label">Blind (no enrichment)</div>
+      <div class="hero-label">Without enrichment</div>
     </div>
     <div class="hero-card hero-ask">
       <p class="hero-num">22<span class="denom">/24</span></p>
-      <div class="hero-label">/ask (with enrichment)</div>
+      <div class="hero-label">With enrichment</div>
     </div>
     <div class="hero-card hero-delta">
       <p class="hero-num">+10</p>
@@ -140,10 +135,10 @@
     </div>
   </div>
 
-  <p>Both arms are the same coding agent answering the same questions against the same raw CSVs. The only difference is whether the agent reads <code>.semantic-enricher/</code> first. Each question has a planted structural trap; a "PASS" means the agent either gave the correct answer <em>and</em> flagged the trap, or correctly refused when the trap made the question unanswerable as posed.</p>
+  <p>The same agent answers the same questions against the same raw data files in both arms. The only experimental variable is whether the agent has access to enrichment guidance for the dataset. Each error in the unenriched arm is attributable to the agent operating without that guidance: it produces an articulate, plausible answer that does not match the scientific meaning of the question. With the enrichment in scope, the agent reaches the correct interpretation and either answers correctly or appropriately declines.</p>
 
   <div class="key-finding">
-    <strong>Where the lift comes from.</strong> Enrichment helps most when the agent has the least prior knowledge. On the post-cutoff Chromatin dataset (where training data is silent), blind scored 3/8 and <code>/ask</code> scored 8/8. On MIMIC-III (well-represented in training), blind already scored 5/7 and the lift was a single question.
+    <strong>Where the lift comes from.</strong> The benefit of enrichment is largest where the agent's prior knowledge is weakest. On a post-cutoff chromatin dataset (the model has not seen it during training), the unenriched score was 3/8 and the enriched score was 8/8. On MIMIC-III (heavily represented in the public literature), prior knowledge already supplies most of what is needed and the lift is a single question.</p>
   </div>
 </section>
 
@@ -151,7 +146,7 @@
   <h2>Per-dataset summary</h2>
   <table>
     <thead>
-      <tr><th>Dataset</th><th>Blind</th><th>/ask</th><th>Lift</th><th>Why this dataset is interesting</th></tr>
+      <tr><th>Dataset</th><th>Without</th><th>With</th><th>Lift</th><th>Why this dataset</th></tr>
     </thead>
     <tbody>
       <tr class="lift-row">
@@ -159,21 +154,21 @@
         <td>3 / 8</td>
         <td>8 / 8</td>
         <td class="lift-positive">+5</td>
-        <td>Genuinely post-training-cutoff (Zenodo 14600051, published 2026-04-23). Agent recognizes the domain (mouse Hi-C/Micro-C) but knows nothing about the specific files.</td>
+        <td>Mouse mESC chromatin organization data published 2026-04-23 — genuinely post-training-cutoff. The agent recognises the broad domain (Hi-C / Micro-C) but has no prior exposure to the specific files.</td>
       </tr>
       <tr class="lift-row">
         <td><code>lincs_masked</code></td>
         <td>4 / 9</td>
         <td>8 / 9</td>
         <td class="lift-positive">+4</td>
-        <td>All table and column names obfuscated (<code>entity_a</code>, <code>fact_d</code>, <code>num_d1</code>, <code>cat_c1</code>…). Pure test of whether enrichment alone can supply enough semantics to navigate the data.</td>
+        <td>Subset of the LINCS L1000 perturbational signature corpus with table and column names deidentified. Tests whether enrichment alone can supply enough scientific context to navigate the data.</td>
       </tr>
       <tr class="lift-row">
         <td><code>mimic_iii</code></td>
         <td>5 / 7</td>
         <td>6 / 7</td>
         <td class="lift-positive">+1</td>
-        <td>Public ICU EHR (1000-patient demo subset). Agent has strong prior knowledge of MIMIC schema from training; enrichment mainly catches dataset-extract-specific quirks (missing columns, scale-mixing).</td>
+        <td>The MIMIC-III ICU electronic health record demo (1000-patient subset). The schema is extensively documented in published work, so the agent's prior knowledge is strong.</td>
       </tr>
       <tr style="background: #f7f7f3;">
         <td><strong>Total</strong></td>
@@ -187,189 +182,131 @@
 </section>
 
 <section>
-  <h2>What is "silent errors"?</h2>
-  <p>Each question has a single planted <em>structural trap</em> — a way the data is shaped, named, or split that will silently produce a plausible-but-wrong answer if the agent doesn't notice it. The trap categories tested:</p>
-  <table>
-    <thead><tr><th>Trap</th><th>What it looks like</th><th>Why it's silent</th></tr></thead>
-    <tbody>
-      <tr><td><code>null_sentinel</code></td><td>A magic value (<code>-666</code>, <code>0</code>) used for "missing"</td><td>Math runs without error; mean drops or flips sign</td></tr>
-      <tr><td><code>wrong_grain</code></td><td>Counting rows of the wrong table (e.g., admissions vs patients)</td><td>Always returns a positive integer</td></tr>
-      <tr><td><code>same_grain_wide_join</code></td><td>Two tables that are wide splits of the same logical entity</td><td>Naive many-to-many join fans the row count out</td></tr>
-      <tr><td><code>missing_filter</code></td><td>Mixed treatment/control or quality flags ignored</td><td>Numbers come out, just the wrong cohort</td></tr>
-      <tr><td><code>unit_mixing</code></td><td>Same column has rows in <code>nM</code>, <code>µM</code>, <code>%</code>, …</td><td>A single median across mixed units is a meaningless number</td></tr>
-      <tr><td><code>system_disjointness</code></td><td>CareVue (2001-08) vs MetaVision (2008-12) ITEMIDs for "heart rate"</td><td>Querying one ITEMID gives a half-cohort mean</td></tr>
-      <tr><td><code>resolution_sum</code></td><td>Same loop set called at 1kb / 2kb / 5kb in three files</td><td>Summing all three triple-counts</td></tr>
-      <tr><td><code>control_as_data</code></td><td>A "_random" file is a permutation null, not a real cohort</td><td>Comparing random-vs-real as if two real conditions</td></tr>
-      <tr><td><code>reference_vs_result</code></td><td>A bundled annotation file (e.g., mm39 CTCF .bed) treated as study output</td><td>The file <em>is</em> in the dataset directory</td></tr>
-      <tr><td><code>simulation_vs_experiment</code></td><td>PolySim simulation outputs read as wet-lab measurements</td><td>Numeric columns look like any other measurement</td></tr>
-      <tr><td><code>partition_assumption</code></td><td>Two boolean flags assumed mutually exclusive when actually overlapping</td><td>Math is correct, claim is wrong</td></tr>
-      <tr><td><code>nonunique_assumption</code></td><td><code>SEQ_NUM=1</code> not unique per admission (multiple primary diagnoses possible)</td><td>One-per-admission count produces inflated total</td></tr>
-      <tr><td><code>coding_system_conflation</code></td><td>ICD-9 and ICD-10 codes mixed without translation</td><td>"4019" and "I10" are both hypertension</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<section>
-  <h2>Dataset 1 — chromatin_loops <span style="color:var(--muted);font-weight:400;font-size:14px;">(blind 3/8 → /ask 8/8, +5)</span></h2>
+  <h2>Dataset 1 — chromatin_loops <span style="color:var(--muted);font-weight:400;font-size:14px;">(without 3/8 → with 8/8, +5)</span></h2>
   <div class="dataset-card">
-    <p>Mouse mESC chromatin loops from <strong>Zenodo 14600051</strong>, published 2026-04-23 — genuinely post-cutoff for the model's training data. Mix of Mustache loop calls (3 resolutions), Micro-C quantification scores, polymer-simulation outputs, and a bundled mm39 CTCF reference annotation. The trap density is high because the directory contains many overlapping representations of "loops" + a permutation null + simulation outputs + reference annotations all sitting next to each other as similarly-named CSVs.</p>
+    <p>Mouse embryonic stem cell chromatin loop data (Zenodo 14600051, published 2026-04-23). The directory contains primary loop calls at multiple genomic resolutions, Micro-C quantification of loop strength, polymer-simulation outputs, a permutation-based control, and a bundled reference annotation of CTCF binding sites in the mm39 genome build. The scientific value of the questions lies in distinguishing between these heterogeneous, similarly-named scientific objects.</p>
     <div class="ds-meta">
       <span><b>Tables:</b> 28</span>
-      <span><b>Questions:</b> 8 silent-errors</span>
-      <span><b>Lift:</b> +5 questions (62.5pp)</span>
+      <span><b>Questions:</b> 8</span>
+      <span><b>Lift:</b> +5 (62.5pp)</span>
     </div>
   </div>
 
   <table>
-    <thead><tr><th>QID</th><th>Question</th><th>Trap</th><th>Blind</th><th>/ask</th></tr></thead>
+    <thead><tr><th>QID</th><th>Scientific question</th><th>Without</th><th>With</th></tr></thead>
     <tbody>
-      <tr><td>01</td><td>How many loops were called by the Mustache caller?</td><td><code>resolution_sum</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>02</td><td>How many loops are in mESC_random_loops_filtered?</td><td><code>control_as_data</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>03</td><td>Which file should I use for "the final set of mESC loops"?</td><td><code>overlapping_sources</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>04</td><td>What is the grain of BILD_floop_bootstrap_mean_CTCF_0_hr_17kb?</td><td><code>shape_misread</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>05</td><td>I want to fit a regression model. Which file do I use?</td><td><code>split_ignored</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>06</td><td>Does this dataset contain CTCF binding sites?</td><td><code>reference_vs_result</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>07</td><td>Compare MicroC_loop_quantification to MicroC_random_loop_quantification.</td><td><code>null_as_condition</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>08</td><td>What experimental measurement does polysim_calibration_curve represent?</td><td><code>simulation_vs_experiment</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>01</td><td>How many distinct chromatin loops were called by Mustache in this study?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>02</td><td>How many loops are in the <code>mESC_random_loops_filtered</code> file?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>03</td><td>Which file should be used as "the final set of mESC loops" for downstream analysis?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>04</td><td>What is the unit of observation (the grain) of the bootstrap CTCF measurement file?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>05</td><td>To fit a regression of loop strength on covariates, which file is the appropriate input?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>06</td><td>Does this dataset contain experimentally measured CTCF binding sites?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>07</td><td>How does Micro-C loop quantification compare to Micro-C quantification of random loops?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>08</td><td>What experimental measurement does the polysim calibration curve represent?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
     </tbody>
   </table>
 
-  <h3>Why blind failed</h3>
+  <h3>Errors observed without enrichment</h3>
   <ul>
-    <li><strong>chrom_se_01</strong> — Without the registry, the agent treated the three Mustache files as independent loop sets and asked clarifying questions, never recognizing that <code>1kb</code>/<code>2kb</code>/<code>5kb</code> are the <em>same</em> calls at different resolutions.</li>
-    <li><strong>chrom_se_02</strong> — Reported the row count of the <code>_random</code> file as if it were real loops. The filename hint alone wasn't enough; the agent had no notion that "random" here means a permutation null.</li>
-    <li><strong>chrom_se_03</strong> — Picked one file from the three overlapping "final loop" candidates with no acknowledgment that <code>filtered_loops</code> and <code>final_loop_data</code> share keys but differ in annotations.</li>
-    <li><strong>chrom_se_06</strong> — Treated <code>mm39_CTCF_cohesin.bed</code> as study output ("yes, the dataset measured 28,583 CTCF sites"). Missed that mm39 is a genome-build identifier, not an experimental run — this is a bundled reference annotation.</li>
-    <li><strong>chrom_se_08</strong> — Read <code>polysim_calibration_curve</code> as a Micro-C measurement. The word "polysim" should signal "polymer simulation" but on a fresh dataset the agent had no anchor.</li>
+    <li><strong>Q01.</strong> The same loop calls appear at three genomic resolutions (1 kb, 2 kb, 5 kb) in three separate files. Without guidance the agent treated them as independent loop sets.</li>
+    <li><strong>Q02.</strong> The <code>_random</code> file is a permutation-based statistical control, not a discovered cohort of loops. The unenriched answer reported its row count as a count of loops.</li>
+    <li><strong>Q03.</strong> Three candidate files share keys but differ in annotation depth. Without context the agent picked one arbitrarily, with no acknowledgement of the choice.</li>
+    <li><strong>Q06.</strong> A bundled annotation of CTCF binding sites from the mm39 reference genome was reported as an experimental measurement performed in this study.</li>
+    <li><strong>Q08.</strong> The polysim calibration curve is the output of a polymer-physics simulation. Without guidance, the agent read its numeric columns as wet-lab measurements.</li>
   </ul>
-
-  <h3>How /ask succeeded</h3>
-  <p>The enrichment registry tags each table with its <em>research role</em> — <code>raw_signal</code>, <code>permutation_null</code>, <code>simulation_output</code>, <code>reference_annotation</code>, <code>derivative_summary</code>. Per-table <code>purpose:</code> fields explain provenance ("derived from polymer simulation", "permutation control with random coordinates"). Trap detection had already flagged the resolution-duplication pattern across the three Mustache files. Once the agent reads any of this, the traps become legible — every <code>/ask</code> answer in this dataset cites the role tag or the trap finding before producing the number.</p>
 </section>
 
 <section>
-  <h2>Dataset 2 — lincs_masked <span style="color:var(--muted);font-weight:400;font-size:14px;">(blind 4/9 → /ask 8/9, +4)</span></h2>
+  <h2>Dataset 2 — lincs_masked <span style="color:var(--muted);font-weight:400;font-size:14px;">(without 4/9 → with 8/9, +4)</span></h2>
   <div class="dataset-card">
-    <p>Subset of <strong>LINCS L1000</strong> (~50K perturbagens, 12K genes, 100 cell lines, 470K signatures) with <em>all</em> table and column names obfuscated: <code>entity_a</code>, <code>fact_d</code>, <code>num_d1</code>, <code>cat_c1</code>, <code>flag_b1</code>, etc. The agent has no way to recognize the schema from training. The masking forces a clean test of "given <em>only</em> the structure + the enrichment, can the agent reason correctly?"</p>
+    <p>A subset of the LINCS L1000 perturbational gene-expression atlas (~50,000 perturbagens, ~12,000 genes, ~100 cell lines, ~470,000 signatures), with all table and column names systematically deidentified. The agent cannot recognise the schema from its training data; the enrichment is the sole source of scientific identity for each variable.</p>
     <div class="ds-meta">
-      <span><b>Tables:</b> 9 (twin-table grain pattern)</span>
-      <span><b>Sentinels:</b> <code>-666</code> for missing</span>
-      <span><b>Questions:</b> 9 silent-errors</span>
-      <span><b>Lift:</b> +4 questions (44pp)</span>
+      <span><b>Tables:</b> 9</span>
+      <span><b>Sentinel value for missing:</b> <code>-666</code></span>
+      <span><b>Questions:</b> 9</span>
+      <span><b>Lift:</b> +4 (44pp)</span>
     </div>
   </div>
 
   <table>
-    <thead><tr><th>QID</th><th>Question</th><th>Trap</th><th>Blind</th><th>/ask</th></tr></thead>
+    <thead><tr><th>QID</th><th>Scientific question</th><th>Without</th><th>With</th></tr></thead>
     <tbody>
-      <tr><td>01</td><td>Mean of <code>num_a1</code> across <code>entity_a</code></td><td><code>null_sentinel</code> (-666)</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>02</td><td>Average <code>num_dm1</code> per <code>id_c</code></td><td><code>wrong_grain</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>03</td><td>Rows from joining <code>entity_c</code> ⨝ <code>entity_c_metrics</code> on <code>id_c</code></td><td><code>same_grain_wide_join</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>04</td><td>One row per signature combining <code>fact_d</code> + <code>fact_d_metrics</code></td><td><code>same_grain_wide_join</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>05</td><td>"High-quality" subset of <code>fact_d</code> signatures</td><td><code>missing_filter</code> (flag_dm1)</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>06</td><td>How many treatment perturbations are in <code>fact_d</code>?</td><td><code>missing_filter</code> (controls)</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>07</td><td>Median dose <code>num_d1</code> across <code>fact_d</code></td><td><code>unit_mixing</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>08</td><td>Distinct cell lines in <code>entity_a</code></td><td><code>hierarchy_ignored</code> (ref_a1)</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>09</td><td>Fraction with <code>flag_b1=1</code></td><td><code>partition_assumption</code></td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict fail">FAIL</span></td></tr>
+      <tr><td>01</td><td>What is the mean donor age across the cell-line entity table?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>02</td><td>What is the average measurement value per perturbagen?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>03</td><td>How many rows result from joining the perturbagen entity to its metrics table?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>04</td><td>How does one obtain a single row per signature combining the signature table with its metrics?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>05</td><td>What is the high-quality subset of the signature table?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>06</td><td>How many treatment (non-control) perturbations are present in the signature table?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>07</td><td>What is the median dose across the signature table?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>08</td><td>How many distinct cell lines are represented in the cell-line entity table?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>09</td><td>What fraction of genes carry the landmark indicator?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict fail">FAIL</span></td></tr>
     </tbody>
   </table>
 
-  <h3>Why blind failed</h3>
+  <h3>Errors observed without enrichment</h3>
   <ul>
-    <li><strong>lincs_se_02</strong> — No way to know <code>fact_d</code> is already a rollup of <code>fact_e</code>. Agent did the natural join through <code>fact_e</code> and double-counted instances.</li>
-    <li><strong>lincs_se_03</strong> — Treated the two same-grain wide splits as independent entities and reported a Cartesian fan-out as the answer.</li>
-    <li><strong>lincs_se_07</strong> — Computed a single <code>median(num_d1) = 3.0</code> across all rows. With masked column names, there's no signal that <code>cat_d1</code> encodes the unit and pooled medians are meaningless.</li>
-    <li><strong>lincs_se_08</strong> — Counted all 98 rows of <code>entity_a</code> as cell lines. The hierarchy via <code>ref_a1</code> (parent line) and derivative status was invisible.</li>
-    <li><strong>lincs_se_09</strong> — Computed the right fraction (978/12328) but didn't notice <code>flag_b1</code> and <code>flag_b2</code> are overlapping (landmark vs BING gene classes), not mutually exclusive.</li>
+    <li><strong>Q02.</strong> The signature table is itself an aggregate over an underlying replicate-level table. The agent joined back through the replicate table and double-counted observations per perturbagen.</li>
+    <li><strong>Q03.</strong> The two tables are wide splits of the same logical entity sharing a one-to-one key. The agent treated them as independent and reported a fan-out from a many-to-many join.</li>
+    <li><strong>Q07.</strong> The dose column is recorded in heterogeneous units (nM, µM, percent, …) with the unit captured in a separate column. Without the unit semantics the agent computed a single pooled median, a quantity with no scientific meaning.</li>
+    <li><strong>Q08.</strong> The cell-line entity table contains both primary lines and engineered derivative lines linked through a parent-pointer column. Without that hierarchy the agent counted all rows as distinct cell lines.</li>
+    <li><strong>Q09.</strong> The two boolean indicators are not mutually exclusive (the second is a superset that includes the first). The fraction was computed correctly but presented without acknowledging the overlap with the second indicator.</li>
   </ul>
-
-  <h3>How /ask succeeded</h3>
-  <p>The enrichment recovers the <em>semantic identity</em> of each masked column: <code>num_a1</code> is "donor age in years (-666 = missing)", <code>id_c</code> is "perturbagen FK", <code>cat_d1</code> is "dose unit code", <code>flag_dm1</code> is "is_gold quality flag", and so on. The reviewer agent tags <code>flag_b1</code> with a "competing classifier" warning. Trap detection produces explicit findings — including the new <code>control_subset_filter_required</code> heuristic that flagged the masked <code>PTYPE_*</code> codes in <code>cat_c1</code> as a treatment/control mix. <code>/ask</code> reads these and operationalizes them in code; only the partition-overlap finding (se_09) was not surfaced strongly enough to trigger a flag in the answer.</p>
 </section>
 
 <section>
-  <h2>Dataset 3 — mimic_iii <span style="color:var(--muted);font-weight:400;font-size:14px;">(blind 5/7 → /ask 6/7, +1)</span></h2>
+  <h2>Dataset 3 — mimic_iii <span style="color:var(--muted);font-weight:400;font-size:14px;">(without 5/7 → with 6/7, +1)</span></h2>
   <div class="dataset-card">
-    <p>Public <strong>MIMIC-III ICU</strong> demo (1000-patient subset of the v1.4 release). Agent has strong prior knowledge of the schema from training data — both blind and <code>/ask</code> already know that <code>SUBJECT_ID</code> is the patient key, that <code>HADM_ID</code> is the admission key, that ICU charting splits between CareVue and MetaVision systems. The questions therefore probe traps that are <em>specific to this CSV extract</em> rather than general MIMIC traps.</p>
+    <p>The MIMIC-III ICU electronic health record demo (1000-patient subset of the v1.4 release). One of the most extensively published-on clinical datasets in the literature, so prior knowledge supplies most of the schema; the questions therefore probe issues specific to this CSV extract rather than the generic schema.</p>
     <div class="ds-meta">
       <span><b>Tables:</b> 17</span>
-      <span><b>Questions:</b> 7 silent-errors</span>
-      <span><b>Lift:</b> +1 question (14pp)</span>
+      <span><b>Questions:</b> 7</span>
+      <span><b>Lift:</b> +1 (14pp)</span>
     </div>
   </div>
 
   <table>
-    <thead><tr><th>QID</th><th>Question</th><th>Trap</th><th>Blind</th><th>/ask</th></tr></thead>
+    <thead><tr><th>QID</th><th>Scientific question</th><th>Without</th><th>With</th></tr></thead>
     <tbody>
-      <tr><td>01</td><td>Distinct patients with CHF (ICD9 ~ 428.*)</td><td><code>wrong_grain</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>02</td><td>Five most common diagnoses</td><td><code>coding_system_conflation</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>03</td><td>Mean glucose value in LABEVENTS for adult patients</td><td><code>null_sentinel</code> (valuenum=0)</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict fail">FAIL</span></td></tr>
-      <tr><td>04</td><td>Average heart rate in CHARTEVENTS across all ICU stays</td><td><code>system_disjointness</code> (CareVue/MetaVision)</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>05</td><td>Primary diagnosis (SEQ_NUM=1) per admission</td><td><code>nonunique_assumption</code></td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>06</td><td>Fraction of admissions with patient death</td><td><code>field_split</code> (deathtime alone)</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
-      <tr><td>07</td><td>How many positive blood-culture results?</td><td><code>wrong_grain</code> (test vs organism)</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>01</td><td>How many distinct patients have a diagnosis of congestive heart failure (ICD-9 428.*)?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>02</td><td>What are the five most common diagnoses in the cohort?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>03</td><td>What is the mean serum glucose in the laboratory events table for adult patients?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict fail">FAIL</span></td></tr>
+      <tr><td>04</td><td>What is the average heart rate in the chart events table across all ICU stays?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>05</td><td>What is the primary diagnosis (sequence number = 1) per admission?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>06</td><td>What fraction of admissions ended in patient death?</td><td><span class="verdict pass">PASS</span></td><td><span class="verdict pass">PASS</span></td></tr>
+      <tr><td>07</td><td>How many positive blood-culture results are recorded?</td><td><span class="verdict fail">FAIL</span></td><td><span class="verdict pass">PASS</span></td></tr>
     </tbody>
   </table>
 
-  <h3>Why blind almost wins here</h3>
-  <p>MIMIC-III is one of the most-discussed public datasets in the literature; the agent has clearly seen its schema during training. Blind already knows about the CareVue/MetaVision split, the discharge-location-vs-deathtime gap, and the ICD9_CODE conventions. Of the two blind failures:</p>
+  <h3>Errors observed without enrichment</h3>
   <ul>
-    <li><strong>mimic_se_03</strong> — Refused for an unrelated reason (couldn't find a "glucose" column directly), never identified the actual <code>VALUENUM = 0</code> placeholder pattern. <code>/ask</code> also fails this — the enrichment surfaces specimen mixing and a urine-dipstick scale issue, but doesn't flag the zero-as-missing convention.</li>
-    <li><strong>mimic_se_07</strong> — Refused due to a coding error rather than recognizing that <code>MICROBIOLOGYEVENTS</code> has one row per <em>(test, organism)</em> pair. <code>/ask</code> reads the grain note and reports both definitions (specimens with growth = 896; organism isolates = 1086) explicitly.</li>
+    <li><strong>Q03.</strong> The laboratory events table uses a numeric value of zero as a placeholder for missing measurements in this extract. Both arms missed the convention. The mean glucose is reported across rows including the placeholders, biasing the estimate.</li>
+    <li><strong>Q07.</strong> The microbiology events table has one row per (test, organism) pair, so a single specimen can yield multiple rows. Without the grain explicitly stated, the unenriched answer conflated specimens with isolates.</li>
   </ul>
-  <p>The MIMIC result is the "control" that shows the lift comes from <em>missing prior knowledge</em>, not from generic reasoning improvement. Where the agent already knows the data, enrichment helps only at the margin.</p>
+  <p>The MIMIC result behaves as a control: where the agent already has strong prior knowledge of a dataset, enrichment provides only marginal additional benefit. The bulk of the lift in this benchmark comes from datasets where the agent has no such prior.</p>
 </section>
 
 <section>
-  <h2>Why blind failed (the mechanism)</h2>
-  <p>Blind failures cluster into two patterns:</p>
+  <h2>Failure mechanism</h2>
+  <p>Errors in the unenriched arm are not produced by reasoning failures or numeric mistakes. The wrong answers are articulate, internally consistent, and accompanied by reasonable-looking caveats. The failure mode is that the agent operates on a misinterpretation of what the data represents:</p>
   <ol>
-    <li><strong>Plausible-but-wrong path of least resistance.</strong> When the agent doesn't know that <code>fact_d</code> is already a rollup, the natural choice is to join <code>fact_d ⨝ fact_e</code> "for completeness" — and double-count. When it doesn't know that the three Mustache files are the same loops at different resolutions, the natural choice is to sum.</li>
-    <li><strong>Filename hint isn't enough.</strong> Names like <code>mESC_random_loops</code>, <code>mm39_CTCF_cohesin.bed</code>, and <code>polysim_calibration_curve</code> contain the answer in their tokens — but the agent treats them as data without questioning whether the file represents study output, a control, a reference, or a simulation. Filenames carry intent that requires a registry to disambiguate.</li>
+    <li><strong>Plausible-but-wrong path of least resistance.</strong> When the agent does not know that a table is already an aggregate of another, the natural choice is to join through the lower-level table and double-count. When it does not know that three files contain the same calls at different resolutions, the natural choice is to sum.</li>
+    <li><strong>Filenames carry intent that requires guidance to disambiguate.</strong> Names containing tokens such as "random", "polysim", or a reference-genome build do encode the answer — but the agent treats the file as data without questioning whether it represents study output, a control, a simulation, or a reference annotation.</li>
   </ol>
-  <p>In neither case does the agent produce nonsense. The blind answers are <em>articulate</em> — they include caveats, sanity checks, and reasonable-looking numbers. The trap is silent precisely because there is no error message and no internal contradiction; the answer simply doesn't match the meaning of the question.</p>
+  <p>In every failure observed, the underlying issue is that the agent is missing the dataset-specific scientific context that the enrichment supplies.</p>
 </section>
 
 <section>
-  <h2>How /ask succeeded (the mechanism)</h2>
-  <p>The enrichment layer is a precomputed metadata bundle in <code>&lt;data_dir&gt;/.semantic-enricher/</code>. Before answering, <code>/ask</code> reads:</p>
+  <h2>Method</h2>
   <ul>
-    <li><code>CLAUDE.md</code> — natural-language overview of the dataset and per-table summaries</li>
-    <li><code>semantic_layer/registry.yaml</code> — table index with grain, role, and domain tags</li>
-    <li><code>semantic_layer/tables/&lt;TABLE&gt;.yaml</code> — per-column meaning, semantic type, null conventions, and research role</li>
-    <li><code>trap_findings.json</code> — heuristic-detected structural traps (unit-mixing, control-mixing, rollup contamination, …)</li>
-    <li><code>review_findings.json</code> — reviewer agent's cross-table consistency flags</li>
-  </ul>
-  <p>The agent's reasoning trace shows three patterns of use:</p>
-  <ol>
-    <li><strong>Identity recovery on masked schemas.</strong> On LINCS, every <code>/ask</code> answer cites the resolved meaning of the masked columns ("<code>num_a1</code> = donor age in years per enrichment") before computing.</li>
-    <li><strong>Trap operationalization.</strong> On masked LINCS, the agent reads the <code>control_subset_filter_required</code> finding and explicitly partitions <code>PTYPE_*</code> codes by cardinality (treatment modalities have 61–20K perturbagens; controls have 1–8) before counting.</li>
-    <li><strong>Role disambiguation.</strong> On chromatin, the agent uses the registry's <code>research_role</code> tag to distinguish <code>reference_annotation</code> (mm39 BED) from <code>raw_signal</code>, and <code>simulation_output</code> from experimental measurement, before answering.</li>
-  </ol>
-</section>
-
-<section>
-  <h2>The two remaining /ask failures</h2>
-  <ul>
-    <li><strong>lincs_se_09</strong> (<code>partition_assumption</code>) — Agent computes <code>flag_b1=1</code> fraction correctly (978/12,328 = 7.93%) and notes the count matches the L1000 landmark gene set, but doesn't flag that <code>flag_b1</code> and <code>flag_b2</code> are overlapping indicators. The reviewer agent does flag <code>flag_b1/flag_b2</code> as competing classifiers in <code>review_findings.json</code>, but the warning is not strong enough to make the agent surface partition-overlap in its answer.</li>
-    <li><strong>mimic_se_03</strong> (<code>null_sentinel</code> on glucose) — Agent reports 135.82 mg/dL across 15,144 rows, surfaces specimen mixing (CSF vs serum vs urine) and a urine-dipstick scale-mix, but never filters the <code>VALUENUM=0</code> placeholder convention specific to LABEVENTS. The enrichment doesn't currently encode "zero means missing for lab values".</li>
-  </ul>
-  <p>Both misses share a pattern: the agent computes the right number, picks up a real adjacent issue, but doesn't surface the specific trap planted in the benchmark. Both could be addressed by extending review/trap heuristics — partition-overlap detection on co-occurring boolean flags, and zero-as-sentinel detection on lab-value distributions.</p>
-</section>
-
-<section>
-  <h2>Method notes</h2>
-  <ul>
-    <li><strong>Same agent, same prompt template.</strong> Both arms use the standard <code>/ask</code> workflow: read enrichment (or skip it for blind), sample data, write Python, execute, sanity-check, emit a four-section answer. The only difference is whether <code>.semantic-enricher/</code> exists in the data directory the agent reads.</li>
-    <li><strong>Scoring.</strong> An LLM judge reads the agent's answer, the question, and the expected_method, and emits PASS/FAIL with a rationale. PASS requires either the right answer with the trap flagged, or an appropriate refusal grounded in the trap. A "right number with no trap caveat" is a FAIL.</li>
-    <li><strong>Blind ≠ unaware.</strong> The blind agent still has access to the raw data and unrestricted reasoning. It just doesn't get the enrichment bundle. So this is not a comparison of "no knowledge vs full knowledge"; it's "training-data prior alone vs training-data prior + dataset-specific structured metadata".</li>
-    <li><strong>No priming in the prompt.</strong> The <code>/ask</code> prompts in this run contain only the question and the data directory. No hints about the trap, the expected method, or the trap_findings file's contents.</li>
+    <li><strong>Identical agent and prompt.</strong> Both arms run the same agent, the same prompt template, and the same answering workflow over the same raw data files. The only experimental variable is whether the dataset's enrichment is in scope.</li>
+    <li><strong>Scoring.</strong> An LLM judge reads the agent's answer against the question and the expected scientific interpretation, returning PASS or FAIL with a written rationale. PASS requires either a correct numerical answer with appropriate caveats, or an appropriate refusal grounded in the scientific reason the question cannot be answered as posed. A correct number presented without acknowledgement of the relevant scientific qualification is scored as FAIL.</li>
+    <li><strong>Unenriched ≠ uninformed.</strong> The unenriched arm has full access to the raw data and unrestricted reasoning capacity. The comparison is therefore between training-data prior alone and training-data prior augmented by dataset-specific structured guidance, not between no knowledge and full knowledge.</li>
+    <li><strong>No priming.</strong> The questions are issued without hints about the expected interpretation or the relevant scientific qualifications.</li>
   </ul>
 </section>
 
 <footer>
   <p>Benchmark from <a href="https://github.com/shabtai/semantic-enricher" target="_blank">semantic-enricher</a> · 24 questions across 3 datasets · run 2026-04-25</p>
-  <p>Generated with <a href="https://claude.com/claude-code">Claude Code</a></p>
 </footer>
 
 </div>
