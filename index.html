@@ -174,7 +174,7 @@
       </tr>
     </tbody>
   </table>
-  <p style="font-size:12px; color:var(--muted); margin-top:-4px;">Cross-model run scored on 23 questions. The controlled A/B below isolates the enrichment effect on a single model (Claude Opus 4.7) across the 24-question battery.</p>
+  <p style="font-size:12px; color:var(--muted); margin-top:-4px;">Cross-model run scored on 23 questions — one of the original 24 was removed as a flawed question. The controlled A/B below is the earlier run on the full 24-question battery.</p>
 
   <div class="key-finding">
     <strong>A cheaper model with enrichment beats a frontier model without it.</strong> Fable 5 is a large capability jump over Opus 4.7 on the blind task (12 → 19 correct). But Natural Joints reaches 22/23 while driving Claude Sonnet 4.6 — a cheaper model — at roughly a third of the cost: Fable 5 runs about <strong>3× the cost of the Sonnet 4.6 + Natural Joints</strong> configuration. Token counts were broadly similar between the two runs, so almost all of the cost gap comes from being able to run a cheaper model without losing accuracy. We expect to push the cost down toward a tenth without sacrificing accuracy.
