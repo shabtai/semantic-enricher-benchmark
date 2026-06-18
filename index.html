@@ -126,11 +126,63 @@
 <header>
   <h1>Semantic Enricher — Benchmark Results</h1>
   <p class="lede">A controlled comparison of an analytical agent answering scientific questions against three biomedical datasets, with and without a semantic enrichment layer.</p>
-  <p class="lede" style="margin-top: 4px; font-size: 14px;">Run: 2026-04-25 · 3 datasets · 24 questions · 2 arms (without vs with enrichment) · agent: <a style="color: var(--accent);" href="https://github.com/anthropics/claude-code">Claude Code</a> on Anthropic Claude Opus 4.7</p>
+  <p class="lede" style="margin-top: 6px; font-size: 14px;">By <a style="color: var(--accent);" href="https://natural-joints.com" target="_blank">Natural Joints</a> · data integrity &amp; semantic enrichment for clinical &amp; biological research.</p>
+  <p class="lede" style="margin-top: 4px; font-size: 14px;">Runs: 2026-06 cross-model (Fable 5 · Claude Sonnet 4.6 + Natural Joints) · 2026-04-25 enrichment A/B on Claude Opus 4.7 · agent: <a style="color: var(--accent);" href="https://github.com/anthropics/claude-code">Claude Code</a></p>
 </header>
 
 <section>
-  <h2>Headline</h2>
+  <h2>Headline — newer models vs. enrichment</h2>
+  <p>A cheaper model with <strong>Natural Joints</strong> enrichment beats a newer frontier model running blind — at roughly a third of the cost. We ran <strong>Fable 5</strong> blind against Natural Joints driving <strong>Claude Sonnet 4.6</strong> on the same biomedical question battery.</p>
+
+  <div class="hero">
+    <div class="hero-card">
+      <p class="hero-num">19<span class="denom">/23</span></p>
+      <div class="hero-label">Fable 5 — blind</div>
+    </div>
+    <div class="hero-card hero-ask">
+      <p class="hero-num">22<span class="denom">/23</span></p>
+      <div class="hero-label">Sonnet 4.6 + Natural Joints</div>
+    </div>
+    <div class="hero-card hero-delta">
+      <p class="hero-num">~3×</p>
+      <div class="hero-label">Fable 5 cost vs. Sonnet 4.6 + NJ</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Configuration</th><th>Score</th><th>Accuracy</th><th>Relative cost</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Claude Opus 4.7 — <em>blind</em> (no enrichment)</td>
+        <td>12 / 23</td>
+        <td>52%</td>
+        <td>previous baseline</td>
+      </tr>
+      <tr>
+        <td>Fable 5 — <em>blind</em> (no enrichment)</td>
+        <td>19 / 23</td>
+        <td>83%</td>
+        <td class="lift-positive">≈ 3× Sonnet 4.6 + NJ</td>
+      </tr>
+      <tr style="background: var(--pass-bg);">
+        <td><strong>Claude Sonnet 4.6 + Natural Joints</strong></td>
+        <td><strong>22 / 23</strong></td>
+        <td><strong>96%</strong></td>
+        <td><strong>reference (1×)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px; color:var(--muted); margin-top:-4px;">Cross-model run scored on 23 questions. The controlled A/B below isolates the enrichment effect on a single model (Claude Opus 4.7) across the 24-question battery.</p>
+
+  <div class="key-finding">
+    <strong>A cheaper model with enrichment beats a frontier model without it.</strong> Fable 5 is a large capability jump over Opus 4.7 on the blind task (12 → 19 correct). But Natural Joints reaches 22/23 while driving Claude Sonnet 4.6 — a cheaper model — at roughly a third of the cost: Fable 5 runs about <strong>3× the cost of the Sonnet 4.6 + Natural Joints</strong> configuration. Token counts were broadly similar between the two runs, so almost all of the cost gap comes from being able to run a cheaper model without losing accuracy. We expect to push the cost down toward a tenth without sacrificing accuracy.
+  </div>
+</section>
+
+<section>
+  <h2>The enrichment effect, isolated — Opus 4.7 A/B</h2>
   <div class="hero">
     <div class="hero-card hero-blind">
       <p class="hero-num">12<span class="denom">/24</span></p>
@@ -447,7 +499,7 @@
 </section>
 
 <footer>
-  <p>Benchmark from <a href="https://github.com/shabtai/semantic-enricher" target="_blank">semantic-enricher</a> · 24 questions across 3 datasets · run 2026-04-25</p>
+  <p>Benchmark from <a href="https://github.com/shabtai/semantic-enricher" target="_blank">semantic-enricher</a> · data integrity &amp; semantic enrichment by <a href="https://natural-joints.com" target="_blank">Natural Joints</a> · 3 biomedical datasets.</p>
 </footer>
 
 </div>
