@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Natural-Joints — Data Integrity & Semantic Enrichment for Clinical Research</title>
+<style>
+  :root{
+    --ink:#0f1f2e;
+    --ink-soft:#33475b;
+    --muted:#5d7184;
+    --line:#dfe7ec;
+    --teal:#0e8f86;
+    --teal-deep:#0a6f68;
+    --teal-wash:#e8f5f3;
+    --amber:#b5740a;
+    --amber-wash:#fbf2df;
+    --bg:#f5f8f9;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.55;
+    font-size:16px;
+  }
+  .page{max-width:920px;margin:0 auto;padding:0 28px 72px}
+
+  /* Header */
+  header.hero{
+    background:linear-gradient(135deg,#0c2230 0%,#0a6f68 100%);
+    color:#fff;
+    margin:0 -28px 0;
+    padding:54px 28px 46px;
+    border-radius:0 0 22px 22px;
+  }
+  .brandmark{
+    display:inline-flex;align-items:center;gap:12px;
+    font-weight:700;letter-spacing:.3px;font-size:18px;
+    color:#bfeee9;text-transform:uppercase;
+  }
+  .brandmark .dot{
+    width:13px;height:13px;border-radius:50%;
+    background:#5fd6cb;box-shadow:0 0 0 4px rgba(95,214,203,.22);
+  }
+  header.hero h1{
+    font-size:33px;line-height:1.18;margin:18px 0 10px;font-weight:760;
+    letter-spacing:-.4px;max-width:760px;
+  }
+  header.hero p.lede{
+    font-size:18px;color:#d7eeeb;max-width:680px;margin:0;font-weight:400;
+  }
+  .founders{
+    margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.16);
+    display:flex;flex-wrap:wrap;gap:26px;font-size:14.5px;color:#cfe9e6;
+  }
+  .founders b{color:#fff;font-weight:650}
+  .founders .role{display:block;color:#9fd0cb;font-size:13px;margin-top:2px}
+
+  /* Pillars row */
+  .pillars{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    margin:30px 0 8px;
+  }
+  .pillar{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 16px;
+  }
+  .pillar .tag{
+    font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+    color:var(--teal-deep);
+  }
+  .pillar h3{margin:7px 0 5px;font-size:17px;letter-spacing:-.2px}
+  .pillar p{margin:0;color:var(--muted);font-size:14.5px}
+
+  section{margin-top:38px}
+  h2.section{
+    font-size:13px;text-transform:uppercase;letter-spacing:1.3px;
+    color:var(--teal-deep);font-weight:750;margin:0 0 16px;
+    display:flex;align-items:center;gap:11px;
+  }
+  h2.section::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* Five problems */
+  .problem{
+    display:flex;gap:16px;padding:17px 0;border-bottom:1px solid var(--line);
+  }
+  .problem:last-child{border-bottom:0}
+  .problem .num{
+    flex:0 0 38px;height:38px;border-radius:10px;
+    background:var(--teal-wash);color:var(--teal-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:750;font-size:17px;
+  }
+  .problem .body h4{margin:5px 0 4px;font-size:16.5px}
+  .problem .body p{margin:0;color:var(--ink-soft);font-size:14.5px}
+  .problem .body .ex{color:var(--muted);font-style:italic}
+
+  /* Bug of the month callout */
+  .bug{
+    background:var(--amber-wash);border:1px solid #efdcb0;border-radius:16px;
+    padding:22px 24px;display:flex;gap:20px;align-items:flex-start;
+  }
+  .bug .badge{
+    flex:0 0 auto;background:var(--amber);color:#fff;border-radius:10px;
+    padding:8px 13px;font-weight:750;font-size:13px;text-transform:uppercase;
+    letter-spacing:.5px;white-space:nowrap;
+  }
+  .bug h3{margin:2px 0 8px;font-size:18px;color:#5b3c05}
+  .bug p{margin:0 0 12px;color:#6d4f1c;font-size:14.5px}
+  .bug p.bug-foot{margin:14px 0 0;font-size:13.5px;color:#7a5a22}
+  .bug .metric{font-weight:700;color:#8a5a07;white-space:nowrap}
+  .bug code{background:#f3e4c2;border-radius:5px;padding:1px 6px;font-size:13px;color:#6b4708}
+  .bug-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 0}
+  .bug-metrics > div{background:#fff;border:1px solid #efdcb0;border-radius:10px;padding:11px 12px;text-align:center}
+  .bug-metrics .m-big{display:block;font-weight:780;color:#8a5a07;font-size:17px;letter-spacing:-.3px}
+  .bug-metrics .m-lbl{display:block;font-size:12px;color:#9a7330;margin-top:3px}
+
+  /* Benchmarks */
+  .bench{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  }
+  .bench .b{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 18px;text-align:center;
+  }
+  .bench .b .big{
+    font-size:30px;font-weight:780;color:var(--teal-deep);letter-spacing:-.5px;
+    line-height:1.1;
+  }
+  .bench .b .lbl{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .bench-note{font-size:12.5px;color:var(--muted);margin-top:12px;text-align:center}
+
+  /* How it fits */
+  .fit{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:6px 24px;
+  }
+  .fit .row{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .fit .row:last-child{border-bottom:0}
+  .fit .row .k{flex:0 0 168px;font-weight:700;color:var(--ink)}
+  .fit .row .v{color:var(--ink-soft);font-size:14.5px}
+
+  /* Closing */
+  .close{
+    margin-top:40px;background:linear-gradient(135deg,#0c2230,#0e8f86);
+    color:#eafaf8;border-radius:18px;padding:30px 30px;
+  }
+  .close h2{margin:0 0 8px;color:#fff;font-size:22px;letter-spacing:-.3px}
+  .close p{margin:0;color:#cdeae6;max-width:640px}
+  .close .contact{margin-top:18px;font-size:14.5px;color:#bfeee9}
+  .close .contact a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4)}
+
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12.5px}
+
+  @media (max-width:680px){
+    .pillars,.bench,.bug-metrics{grid-template-columns:1fr}
+    .bug{flex-direction:column}
+    header.hero h1{font-size:26px}
+    .fit .row{flex-direction:column;gap:4px}
+    .fit .row .k{flex-basis:auto}
+  }
+  @media print{
+    body{background:#fff}
+    header.hero,.close{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="brandmark"><span class="dot"></span>Natural-Joints</div>
+    <h1>The data-integrity and semantic-enrichment layer for clinical &amp; biological research.</h1>
+    <p class="lede">We make real-world biomedical data trustworthy and usable — finding the errors that break analyses, enriching raw tables into research- and AI-ready knowledge, and surfacing the cohorts, biomarkers, and samples buried in your data lake.</p>
+    <div class="founders">
+      <div><b>Ran Tene, PhD</b><span class="role">Founder · 7 patents · ex-Dropbox</span></div>
+      <div><b>Haggay Tene, PhD</b><span class="role">Mathematics</span></div>
+    </div>
+  </header>
+
+  <!-- FOUR PILLARS -->
+  <div class="pillars">
+    <div class="pillar">
+      <div class="tag">Headless</div>
+      <h3>Bring your own agent</h3>
+      <p>An API-first engine, not another dashboard. Plug it into your own LLM agents, pipelines, and analysts — it produces structured semantic metadata they can consume directly.</p>
+    </div>
+    <div class="pillar">
+      <div class="tag">On-prem</div>
+      <h3>Your data never leaves</h3>
+      <p>Runs entirely inside your environment — on-prem or your private cloud. No PHI egress, compatible with hospital governance, IRB, and data-residency requirements.</p>
+    </div>
+    <div class="pillar">
+      <div class="tag">Deep analysis</div>
+      <h3>Reads data like a domain expert</h3>
+      <p>Goes past column names: it inspects values, distributions, relationships, and cross-table structure to infer what each field actually means and how tables truly connect.</p>
+    </div>
+    <div class="pillar">
+      <div class="tag">Data bugs</div>
+      <h3>Finds errors others miss</h3>
+      <p>Automatically detects wrong units, mislabeled fields, leakage, and broken joins — the silent defects that quietly invalidate downstream research and models.</p>
+    </div>
+  </div>
+
+  <!-- FIVE PROBLEMS -->
+  <section>
+    <h2 class="section">Five problems we solve on almost every real dataset</h2>
+
+    <div class="problem">
+      <div class="num">1</div>
+      <div class="body">
+        <h4>Errors in the data itself</h4>
+        <p>Wrong units, misleading labels, inconsistent endpoints, outlier values, or columns that don't contain what their name claims.</p>
+      </div>
+    </div>
+
+    <div class="problem">
+      <div class="num">2</div>
+      <div class="body">
+        <h4>Errors in the analyses that rely on the data</h4>
+        <p>The wrong cohort, the wrong column used, data leakage, problematic joins, or mistaken interpretation of variables — caught before they reach a result.</p>
+      </div>
+    </div>
+
+    <div class="problem">
+      <div class="num">3</div>
+      <div class="body">
+        <h4>Tagging to your internal requirements</h4>
+        <p>Enrichment and labeling of tables, columns, and values against your organization's own definitions, standards, and working needs — turning raw data into data that is usable for research, analysis, and AI.</p>
+      </div>
+    </div>
+
+    <div class="problem">
+      <div class="num">4</div>
+      <div class="body">
+        <h4>Deep search inside large data lakes</h4>
+        <p>Finding patient cohorts, diseases, treatments, samples, and biomarkers even when they are not explicitly labeled or are scattered across old, undocumented tables.</p>
+      </div>
+    </div>
+
+    <div class="problem">
+      <div class="num">5</div>
+      <div class="body">
+        <h4>Unifying different datasets</h4>
+        <p>Connecting disparate sources together without losing the clinical and research meaning that makes them valuable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUG OF THE MONTH -->
+  <section>
+    <h2 class="section">Proof, on a cadence</h2>
+    <div class="bug">
+      <div class="badge">Bug of the Month</div>
+      <div>
+        <h3>A “2-year” survival endpoint that was really 17 months</h3>
+        <p>A 2025 <b>Nature Genetics</b> study claimed a spatial signature predicts <b>2-year progression-free survival</b> in non-small-cell lung cancer and identifies patients who outperform standard-of-care immunotherapy. Our engine flagged the survival table's <code>months</code> column: it had been built with the wrong days-per-month divisor — <span class="metric">22.11 instead of 30.44</span> — so the advertised “2-year” endpoint is actually <span class="metric">17.4 months (1.45 years)</span>, silently stretching every survival figure by <span class="metric">37%</span>.</p>
+        <div class="bug-metrics">
+          <div><span class="m-big">3.8 → 2.2</span><span class="m-lbl">Hazard ratio, once corrected</span></div>
+          <div><span class="m-big">p 0.004 → 0.11</span><span class="m-lbl">Headline significance — lost</span></div>
+          <div><span class="m-big">SoC ≈ signature</span><span class="m-lbl">Matches standard care, doesn't beat it</span></div>
+        </div>
+        <p class="bug-foot">A single mis-computed column quietly inverted the paper's central claim — and it was caught automatically, not by a reviewer. This is exactly the class of silent defect that derails research and AI models downstream. Full public write-up available.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENCHMARKS -->
+  <section>
+    <h2 class="section">Recent benchmarks — ahead of any known system</h2>
+    <div class="bench">
+      <div class="b">
+        <div class="big">96%</div>
+        <div class="lbl">Biomedical questions answered correctly with Natural Joints + Claude Sonnet 4.6 (22 of 23)</div>
+      </div>
+      <div class="b">
+        <div class="big">83%</div>
+        <div class="lbl">Fable 5 — a newer frontier model running unaided, at ~3× the cost (19 of 23)</div>
+      </div>
+      <div class="b">
+        <div class="big">~⅓</div>
+        <div class="lbl">The frontier model's cost — Natural Joints beats it while running a cheaper model</div>
+      </div>
+    </div>
+    <div class="bench-note">Benchmarks run against frontier baselines. <a href="https://shabtai.github.io/semantic-enricher-benchmark/" style="color:var(--teal-deep);font-weight:600;">See the full public benchmark&nbsp;→</a></div>
+  </section>
+
+  <!-- HOW IT FITS -->
+  <section>
+    <h2 class="section">How it fits a medical center</h2>
+    <div class="fit">
+      <div class="row"><div class="k">Deployment</div><div class="v">Installed on-prem or in your private cloud — data and compute stay inside your security perimeter.</div></div>
+      <div class="row"><div class="k">Integration</div><div class="v">Headless and API-first. Connects to CSV, Parquet, clinical exports, and data-lake catalogs; outputs structured semantic metadata your teams and agents read directly.</div></div>
+      <div class="row"><div class="k">Governance</div><div class="v">No PHI leaves the institution. Compatible with IRB, data-residency, and internal compliance controls.</div></div>
+      <div class="row"><div class="k">Output</div><div class="v">An enriched, validated semantic layer plus an auditable list of data errors and analysis risks — ready for research, regulatory work, and AI development.</div></div>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <div class="close">
+    <h2>Raw clinical data → trustworthy, research-ready knowledge.</h2>
+    <p>Natural-Joints turns the messy, error-prone reality of biomedical data into a clean, enriched, and verified foundation — so your researchers, analysts, and AI build on data they can trust.</p>
+    <div class="contact">
+      <a href="https://natural-joints.com">natural-joints.com</a> &nbsp;·&nbsp; <a href="mailto:ran@natural-joints.com">ran@natural-joints.com</a> &nbsp;·&nbsp; <a href="https://shabtai.github.io/semantic-enricher-benchmark/">View the benchmark&nbsp;→</a>
+    </div>
+  </div>
+
+  <footer>
+    Natural-Joints — AI &amp; biological-data quality assurance. &nbsp;|&nbsp; Ran Tene, PhD · Haggay Tene, PhD
+  </footer>
+
+</div>
+</body>
+</html>
